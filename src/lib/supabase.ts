@@ -77,3 +77,69 @@ export type Announcement = {
   is_active: boolean;
   created_at: string;
 };
+
+export type SocialPost = {
+  id: number;
+  ucp_id: number;
+  character_name: string | null;
+  content: string;
+  media_url: string | null;
+  media_type: string;
+  likes_count: number;
+  comments_count: number;
+  shares_count: number;
+  created_at: string;
+};
+
+export type SocialLike = {
+  id: number;
+  post_id: number;
+  character_name: string;
+  created_at: string;
+};
+
+export type SocialComment = {
+  id: number;
+  post_id: number;
+  ucp_id: number;
+  character_name: string | null;
+  content: string;
+  created_at: string;
+};
+
+export type UpdateLog = {
+  id: number;
+  version: string;
+  title: string;
+  body: string;
+  category: string;
+  author: string;
+  created_at: string;
+};
+
+export type ProfileSettings = {
+  id: number;
+  ucp_id: number;
+  avatar_url: string;
+  display_name: string;
+  bio: string;
+  updated_at: string;
+};
+
+export type RankInfo = {
+  level: number;
+  label: string;
+  isAdmin: boolean;
+  canManageAnnouncements: boolean;
+  canManageUpdateLogs: boolean;
+  canBan: boolean;
+};
+
+export function getRankFromLevel(level: number): RankInfo {
+  if (level >= 10) return { level, label: 'Developer', isAdmin: true, canManageAnnouncements: true, canManageUpdateLogs: true, canBan: true };
+  if (level >= 8) return { level, label: 'Head Admin', isAdmin: true, canManageAnnouncements: true, canManageUpdateLogs: true, canBan: true };
+  if (level >= 6) return { level, label: 'Senior Admin', isAdmin: true, canManageAnnouncements: true, canManageUpdateLogs: false, canBan: true };
+  if (level >= 4) return { level, label: 'Moderator', isAdmin: true, canManageAnnouncements: true, canManageUpdateLogs: false, canBan: false };
+  if (level >= 2) return { level, label: 'Helper', isAdmin: false, canManageAnnouncements: false, canManageUpdateLogs: false, canBan: false };
+  return { level, label: 'Member', isAdmin: false, canManageAnnouncements: false, canManageUpdateLogs: false, canBan: false };
+}

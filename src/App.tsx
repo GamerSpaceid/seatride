@@ -4,12 +4,15 @@ import {
   Activity, Bell, CarFront, ChevronRight, Clock3, Gamepad2, Heart, Home,
   MessageCircle, MoreHorizontal, PanelLeftClose, PanelLeftOpen, Plus,
   Radio, Search, Settings, ShieldCheck, Sparkles, Trophy, UserRound,
-  Users, WalletCards, X, Zap,
+  Users, WalletCards, X, Zap, Shield, UserCog,
 } from 'lucide-react';
 import { supabase, type Announcement } from './lib/supabase';
 import CharactersPage from './pages/CharactersPage';
 import VehiclesPage from './pages/VehiclesPage';
 import ForumPage from './pages/ForumPage';
+import CommunityPage from './pages/CommunityPage';
+import AdminPage from './pages/AdminPage';
+import ProfilePage from './pages/ProfilePage';
 
 type NavItem = { label: string; icon: typeof Home };
 
@@ -24,6 +27,8 @@ const navigation: NavItem[] = [
   { label: 'Vehicles', icon: CarFront },
   { label: 'Community', icon: Users },
   { label: 'Forum', icon: MessageCircle },
+  { label: 'Admin', icon: Shield },
+  { label: 'Profile', icon: UserCog },
 ];
 
 const posts: FeedPost[] = [
@@ -76,6 +81,9 @@ function App() {
       case 'Characters': return <CharactersPage />;
       case 'Vehicles': return <VehiclesPage />;
       case 'Forum': return <ForumPage />;
+      case 'Community': return <CommunityPage />;
+      case 'Admin': return <AdminPage />;
+      case 'Profile': return <ProfilePage />;
       default: return null;
     }
   };
@@ -106,7 +114,7 @@ function App() {
         <div className="side-label">{sidebarOpen ? 'PERSONAL' : '•'}</div>
         <nav className="primary-nav">
           <button className="nav-item" onClick={() => showNotice('Messages are coming online soon.')}><MessageCircle size={19} /><span>{sidebarOpen && 'Messages'}</span>{sidebarOpen && <span className="unread-count">3</span>}</button>
-          <button className="nav-item" onClick={() => showNotice('Settings panel opened.')}><Settings size={19} /><span>{sidebarOpen && 'Settings'}</span></button>
+          <button className={`nav-item ${activeNav === 'Profile' ? 'active' : ''}`} onClick={() => setActiveNav('Profile')}><Settings size={19} /><span>{sidebarOpen && 'Settings'}</span></button>
         </nav>
         <div className="sidebar-footer">
           <div className="profile-mini"><div className="avatar avatar-violet">SA</div>{sidebarOpen && <div className="profile-meta"><strong>Saki</strong><span>Developer <span className="online-dot" /></span></div>}</div>
