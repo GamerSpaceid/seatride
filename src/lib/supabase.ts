@@ -143,3 +143,33 @@ export function getRankFromLevel(level: number): RankInfo {
   if (level >= 2) return { level, label: 'Helper', isAdmin: false, canManageAnnouncements: false, canManageUpdateLogs: false, canBan: false };
   return { level, label: 'Member', isAdmin: false, canManageAnnouncements: false, canManageUpdateLogs: false, canBan: false };
 }
+
+export type DonationPackage = {
+  id: number;
+  label: string;
+  amount: number;
+  credits: number;
+  is_popular: boolean;
+  display_order: number;
+};
+
+export type Donation = {
+  id: number;
+  character_name: string;
+  amount: number;
+  credits: number;
+  payment_method: string;
+  voucher_code: string | null;
+  status: string;
+  created_at: string;
+};
+
+export type ServerStatus = {
+  online: boolean;
+  hostname: string;
+  gamemode: string;
+  language: string;
+  players: number;
+  maxPlayers: number;
+  ping: number;
+};

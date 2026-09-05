@@ -4,7 +4,7 @@ import {
   Activity, Bell, CarFront, ChevronRight, Clock3, Gamepad2, Heart, Home,
   MessageCircle, MoreHorizontal, PanelLeftClose, PanelLeftOpen, Plus,
   Radio, Search, Settings, ShieldCheck, Sparkles, Trophy, UserRound,
-  Users, WalletCards, X, Zap, Shield, UserCog,
+  Users, WalletCards, X, Zap, Shield, UserCog, Radio as RadioIcon, DollarSign,
 } from 'lucide-react';
 import { supabase, type Announcement } from './lib/supabase';
 import CharactersPage from './pages/CharactersPage';
@@ -13,6 +13,8 @@ import ForumPage from './pages/ForumPage';
 import CommunityPage from './pages/CommunityPage';
 import AdminPage from './pages/AdminPage';
 import ProfilePage from './pages/ProfilePage';
+import TopUpPage from './pages/TopUpPage';
+import ServerStatusPage from './pages/ServerStatusPage';
 
 type NavItem = { label: string; icon: typeof Home };
 
@@ -27,6 +29,8 @@ const navigation: NavItem[] = [
   { label: 'Vehicles', icon: CarFront },
   { label: 'Community', icon: Users },
   { label: 'Forum', icon: MessageCircle },
+  { label: 'Server', icon: RadioIcon },
+  { label: 'Top Up', icon: DollarSign },
   { label: 'Admin', icon: Shield },
   { label: 'Profile', icon: UserCog },
 ];
@@ -82,6 +86,8 @@ function App() {
       case 'Vehicles': return <VehiclesPage />;
       case 'Forum': return <ForumPage />;
       case 'Community': return <CommunityPage />;
+      case 'Server': return <ServerStatusPage />;
+      case 'Top Up': return <TopUpPage />;
       case 'Admin': return <AdminPage />;
       case 'Profile': return <ProfilePage />;
       default: return null;
