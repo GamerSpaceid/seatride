@@ -1,49 +1,21 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import logo from '../assets/logo/logo.png';
 import {
-  Activity,
-  Bell,
-  CarFront,
-  ChevronRight,
-  CircleDollarSign,
-  Clock3,
-  Gamepad2,
-  Heart,
-  Home,
-  MessageCircle,
-  MoreHorizontal,
-  PanelLeftClose,
-  PanelLeftOpen,
-  Plus,
-  Radio,
-  Search,
-  Settings,
-  ShieldCheck,
-  Sparkles,
-  Swords,
-  ThumbsUp,
-  Trophy,
-  UserRound,
-  Users,
-  WalletCards,
-  X,
-  Zap,
+  Activity, Bell, CarFront, ChevronRight, Clock3, Gamepad2, Heart, Home,
+  MessageCircle, MoreHorizontal, PanelLeftClose, PanelLeftOpen, Plus,
+  Radio, Search, Settings, ShieldCheck, Sparkles, Trophy, UserRound,
+  Users, WalletCards, X, Zap,
 } from 'lucide-react';
+import { supabase, type Announcement } from './lib/supabase';
+import CharactersPage from './pages/CharactersPage';
+import VehiclesPage from './pages/VehiclesPage';
+import ForumPage from './pages/ForumPage';
 
 type NavItem = { label: string; icon: typeof Home };
 
 type FeedPost = {
-  id: number;
-  author: string;
-  role: string;
-  time: string;
-  initials: string;
-  color: string;
-  text: string;
-  likes: number;
-  comments: number;
-  liked: boolean;
-  image?: string;
+  id: number; author: string; role: string; time: string; initials: string;
+  color: string; text: string; likes: number; comments: number; liked: boolean;
 };
 
 const navigation: NavItem[] = [
@@ -55,42 +27,9 @@ const navigation: NavItem[] = [
 ];
 
 const posts: FeedPost[] = [
-  {
-    id: 1,
-    author: 'NoxViper',
-    role: 'Legendary Member',
-    time: '12 min ago',
-    initials: 'NV',
-    color: 'pink',
-    text: 'Finally got the Skyline tuned for the night runs. Who is taking the east highway tonight?',
-    likes: 28,
-    comments: 7,
-    liked: false,
-  },
-  {
-    id: 2,
-    author: 'Mikaela',
-    role: 'Street Racer',
-    time: '1 hr ago',
-    initials: 'MI',
-    color: 'cyan',
-    text: 'The new update feels incredible. Big respect to the dev team for the new city lighting.',
-    likes: 46,
-    comments: 12,
-    liked: true,
-  },
-  {
-    id: 3,
-    author: 'Rex_07',
-    role: 'Member',
-    time: '3 hrs ago',
-    initials: 'R7',
-    color: 'orange',
-    text: 'Looking for a crew to run some jobs with this weekend. Drop a message if you are active.',
-    likes: 19,
-    comments: 4,
-    liked: false,
-  },
+  { id: 1, author: 'NoxViper', role: 'Legendary Member', time: '12 min ago', initials: 'NV', color: 'pink', text: 'Finally got the Skyline tuned for the night runs. Who is taking the east highway tonight?', likes: 28, comments: 7, liked: false },
+  { id: 2, author: 'Mikaela', role: 'Street Racer', time: '1 hr ago', initials: 'MI', color: 'cyan', text: 'The new update feels incredible. Big respect to the dev team for the new city lighting.', likes: 46, comments: 12, liked: true },
+  { id: 3, author: 'Rex_07', role: 'Member', time: '3 hrs ago', initials: 'R7', color: 'orange', text: 'Looking for a crew to run some jobs with this weekend. Drop a message if you are active.', likes: 19, comments: 4, liked: false },
 ];
 
 function App() {
@@ -101,6 +40,14 @@ function App() {
   const [newPost, setNewPost] = useState('');
   const [feed, setFeed] = useState(posts);
   const [notice, setNotice] = useState('');
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase.from('announcements').select('*').eq('is_active', true).order('created_at', { ascending: false }).limit(3);
+      if (data) setAnnouncements(data as Announcement[]);
+    })();
+  }, []);
 
   const showNotice = (message: string) => {
     setNotice(message);
@@ -122,6 +69,15 @@ function App() {
     setNewPost('');
     setComposerOpen(false);
     showNotice('Your post is now live in the community feed.');
+  };
+
+  const renderPage = () => {
+    switch (activeNav) {
+      case 'Characters': return <CharactersPage />;
+      case 'Vehicles': return <VehiclesPage />;
+      case 'Forum': return <ForumPage />;
+      default: return null;
+    }
   };
 
   return (
@@ -170,30 +126,34 @@ function App() {
         </header>
 
         <div className="page-wrap">
-          <section className="welcome-row">
-            <div><p className="eyebrow"><span className="pulse-dot" /> SERVER ONLINE / 24.7.2026</p><h1>Welcome back, <em>Saki</em><span className="headline-mark">✦</span></h1><p className="welcome-copy">Your command center for everything happening in SEA TRIBE.</p></div>
-            <button className="primary-button" onClick={() => setComposerOpen(true)}><Plus size={18} />Create post</button>
-          </section>
+          {activeNav === 'Overview' ? (
+            <>
+              <section className="welcome-row">
+                <div><p className="eyebrow"><span className="pulse-dot" /> SERVER ONLINE / 24.7.2026</p><h1>Welcome back, <em>Saki</em><span className="headline-mark">✦</span></h1><p className="welcome-copy">Your command center for everything happening in SEA TRIBE.</p></div>
+                <button className="primary-button" onClick={() => setComposerOpen(true)}><Plus size={18} />Create post</button>
+              </section>
 
-          <section className="stats-grid">
-            <StatCard icon={<Users size={20} />} label="Players online" value="184" detail="+12.4%" trend="up" accent="pink" />
-            <StatCard icon={<Activity size={20} />} label="Server uptime" value="99.98%" detail="This month" trend="neutral" accent="cyan" />
-            <StatCard icon={<Trophy size={20} />} label="Your reputation" value="2,840" detail="Top 8%" trend="up" accent="yellow" />
-            <StatCard icon={<WalletCards size={20} />} label="Tribe credits" value="12,450" detail="Top up" trend="action" accent="green" />
-          </section>
+              <section className="stats-grid">
+                <StatCard icon={<Users size={20} />} label="Players online" value="184" detail="+12.4%" trend="up" accent="pink" />
+                <StatCard icon={<Activity size={20} />} label="Server uptime" value="99.98%" detail="This month" trend="neutral" accent="cyan" />
+                <StatCard icon={<Trophy size={20} />} label="Your reputation" value="2,840" detail="Top 8%" trend="up" accent="yellow" />
+                <StatCard icon={<WalletCards size={20} />} label="Tribe credits" value="12,450" detail="Top up" trend="action" accent="green" />
+              </section>
 
-          <div className="content-grid">
-            <div className="feed-column">
-              <div className="section-heading"><div><h2>Community pulse</h2><p>What&apos;s happening in the tribe</p></div><button className="text-button" onClick={() => showNotice('You are viewing the latest posts.')}>Latest <ChevronRight size={15} /></button></div>
-              <div className="feed-composer" onClick={() => setComposerOpen(true)}><div className="avatar avatar-violet">SA</div><span>Share something with the tribe...</span><button className="composer-icon"><Plus size={18} /></button></div>
-              <div className="feed-list">{feed.map((post) => <PostCard key={post.id} post={post} onLike={toggleLike} onComment={() => showNotice('Comments panel opened.')} />)}</div>
-            </div>
-            <div className="right-column">
-              <ServerCard onCopy={() => showNotice('Server address copied.')} />
-              <AnnouncementCard onOpen={() => showNotice('All announcements opened.')} />
-              <DiscordCard onJoin={() => showNotice('Discord invitation opened.')} />
-            </div>
-          </div>
+              <div className="content-grid">
+                <div className="feed-column">
+                  <div className="section-heading"><div><h2>Community pulse</h2><p>What&apos;s happening in the tribe</p></div><button className="text-button" onClick={() => showNotice('You are viewing the latest posts.')}>Latest <ChevronRight size={15} /></button></div>
+                  <div className="feed-composer" onClick={() => setComposerOpen(true)}><div className="avatar avatar-violet">SA</div><span>Share something with the tribe...</span><button className="composer-icon"><Plus size={18} /></button></div>
+                  <div className="feed-list">{feed.map((post) => <PostCard key={post.id} post={post} onLike={toggleLike} onComment={() => showNotice('Comments panel opened.')} />)}</div>
+                </div>
+                <div className="right-column">
+                  <ServerCard onCopy={() => showNotice('Server address copied.')} />
+                  <AnnouncementCard announcements={announcements} onOpen={() => showNotice('All announcements opened.')} />
+                  <DiscordCard onJoin={() => showNotice('Discord invitation opened.')} />
+                </div>
+              </div>
+            </>
+          ) : renderPage()}
         </div>
       </main>
 
@@ -214,8 +174,9 @@ function ServerCard({ onCopy }: { onCopy: () => void }) {
   return <section className="side-card server-card"><div className="card-header"><div><span className="card-kicker"><span className="pulse-dot" /> LIVE STATUS</span><h3>SEA TRIBE RP</h3></div><Gamepad2 size={22} /></div><div className="server-details"><div className="server-detail"><span>SERVER IP</span><strong>play.seatribe.gg</strong></div><div className="server-detail"><span>PORT</span><strong>7777</strong></div></div><div className="player-meter"><div className="meter-label"><span>Players online</span><strong>184 <small>/ 500</small></strong></div><div className="meter-track"><div /></div></div><button className="copy-server" onClick={onCopy}>Copy server address <ChevronRight size={15} /></button></section>;
 }
 
-function AnnouncementCard({ onOpen }: { onOpen: () => void }) {
-  return <section className="side-card announcement-card"><div className="card-title-row"><div><span className="card-kicker">LATEST INTEL</span><h3>Announcements</h3></div><Bell size={19} /></div><div className="announcement-item"><span className="announcement-tag">UPDATE</span><h4>Season 04: Afterglow</h4><p>New districts, vehicles, and a night market are landing this weekend.</p><div className="announcement-meta"><Clock3 size={13} /> 2 hours ago <span>•</span> Developer</div></div><button className="view-all" onClick={onOpen}>View all announcements <ChevronRight size={15} /></button></section>;
+function AnnouncementCard({ announcements, onOpen }: { announcements: Announcement[]; onOpen: () => void }) {
+  const latest = announcements[0];
+  return <section className="side-card announcement-card"><div className="card-title-row"><div><span className="card-kicker">LATEST INTEL</span><h3>Announcements</h3></div><Bell size={19} /></div><div className="announcement-item"><span className="announcement-tag">{latest ? latest.type.toUpperCase() : 'UPDATE'}</span><h4>{latest ? latest.title : 'Season 04: Afterglow'}</h4><p>{latest ? latest.content : 'New districts, vehicles, and a night market are landing this weekend.'}</p><div className="announcement-meta"><Clock3 size={13} /> {latest ? new Date(latest.created_at).toLocaleDateString() : '2 hours ago'} <span>•</span> {latest ? latest.author : 'Developer'}</div></div><button className="view-all" onClick={onOpen}>View all announcements <ChevronRight size={15} /></button></section>;
 }
 
 function DiscordCard({ onJoin }: { onJoin: () => void }) {
